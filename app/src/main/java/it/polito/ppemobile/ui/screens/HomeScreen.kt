@@ -14,7 +14,12 @@ import it.polito.ppemobile.ui.components.NavigationButtons
 import it.polito.ppemobile.ui.components.StatusCard
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    onNewAcquisitionClick: () -> Unit,
+    onResultsClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -32,6 +37,10 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        NavigationButtons()
+        NavigationButtons(
+            onNewAcquisitionClick = onNewAcquisitionClick,
+            onResultsClick = onResultsClick,
+            onSettingsClick = onSettingsClick
+        )
     }
 }

@@ -10,26 +10,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun NavigationButtons() {
+fun NavigationButtons(
+    onNewAcquisitionClick: () -> Unit,
+    onResultsClick: () -> Unit,
+    onSettingsClick: () -> Unit
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Button(
-            onClick = {},
+            onClick = onNewAcquisitionClick,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("New Acquisition")
         }
 
         Button(
-            onClick = {},
+            onClick = onResultsClick,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Results")
         }
 
         Button(
-            onClick = {},
+            onClick = onSettingsClick,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Settings")
