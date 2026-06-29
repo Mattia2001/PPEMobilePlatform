@@ -9,6 +9,7 @@ class StorageManager(
     private val context: Context
 ) {
     private val exporter = AcquisitionExporter(context)
+    private val importer = AcquisitionImporter()
 
     fun exportAcquisition(
         acquisition: Acquisition,
@@ -32,6 +33,13 @@ class StorageManager(
             ?.filter { it.extension == "zip" }
             ?.sortedByDescending { it.lastModified() }
             ?: emptyList()
+    }
+
+    fun listExportedAcquisitionInfo(): List<ExportedAcquisitionInfo> {
+        return listExportedAcquisitions()
+            .mapNotNull { file ->
+                importer.readInfo(file)
+            }
     }
 
     fun getExportsDirectory(): File {
