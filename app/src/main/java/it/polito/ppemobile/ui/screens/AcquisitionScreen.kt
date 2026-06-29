@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,67 +20,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.compose.foundation.layout.Box
-import androidx.compose.ui.Alignment
-import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 import it.polito.ppemobile.models.AcquisitionConfig
+import it.polito.ppemobile.models.enums.AcquisitionState
+import it.polito.ppemobile.models.enums.ProcessingSegment
 import it.polito.ppemobile.ui.components.AcquisitionControls
 import it.polito.ppemobile.ui.components.CameraPreview
-import it.polito.ppemobile.ui.components.InfoPanel
 import it.polito.ppemobile.ui.components.DetectionOverlay
-import it.polito.ppemobile.models.enums.ProcessingSegment
+import it.polito.ppemobile.ui.components.InfoPanel
 import it.polito.ppemobile.ui.components.ProcessingStatusOverlay
-import it.polito.ppemobile.metrics.DeviceMetricsSampler
-import it.polito.ppemobile.models.MetricsSnapshot
-import kotlinx.coroutines.delay
-import it.polito.ppemobile.inference.FrameProcessor
-import it.polito.ppemobile.models.DetectionResult
-import it.polito.ppemobile.models.enums.AcquisitionState
-import it.polito.ppemobile.models.FrameResult
-import kotlin.system.measureTimeMillis
-import androidx.compose.runtime.mutableStateListOf
+import it.polito.ppemobile.ui.viewmodel.AcquisitionViewModel
 
 @Composable
 fun AcquisitionScreen(
     configuration: AcquisitionConfig?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: AcquisitionViewModel = viewModel()
 ) {
     val context = LocalContext.current
-
-    val metricsSampler = remember {
-        DeviceMetricsSampler(context.applicationContext)
-    }
-
-    var metrics by remember {
-        mutableStateOf<MetricsSnapshot?>(null)
-    }
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            metrics = metricsSampler.sample()
-            delay(1000)
-        }
-    }
-
-    val frameProcessor = remember {
-        FrameProcessor()
-    }
-
-    var detectionResult by remember {
-        mutableStateOf<DetectionResult?>(null)
-    }
-
-    var frameCounter by remember {
-        mutableStateOf(0)
-    }
-
-    val frameResults = remember {
-        mutableStateListOf<FrameResult>()
-    }
 
     var hasCameraPermission by remember {
         mutableStateOf(
@@ -94,10 +57,6 @@ fun AcquisitionScreen(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         hasCameraPermission = granted
-    }
-
-    var acquisitionState by remember {
-        mutableStateOf(AcquisitionState.IDLE)
     }
 
     Column(
@@ -124,48 +83,17 @@ fun AcquisitionScreen(
                     CameraPreview(
                         modifier = Modifier.fillMaxSize(),
                         onFrameAvailable = { imageProxy ->
-                            if (acquisitionState == AcquisitionState.RUNNING) {
-                                val frameId = "frame_${frameCounter.toString().padStart(6, '0')}"
-                                val timestampGeneration = System.currentTimeMillis()
-
-                                var result: DetectionResult
-
-                                val inferenceTime = measureTimeMillis {
-                                    result = frameProcessor.processFrame(imageProxy)
-                                }
-
-                                detectionResult = result
-
-                                val frameResult = FrameResult(
-                                    frameId = frameId,
-                                    timestampGeneration = timestampGeneration,
-                                    inferenceTime = inferenceTime,
-                                    displayTime = System.currentTimeMillis(),
-                                    imageReference = null,
-                                    processingSegment = ProcessingSegment.LOCAL,
-                                    detectionResult = result,
-                                    complexity = null,
-                                    inOrder = true,
-                                    metricsSnapshot = metrics ?: metricsSampler.sample()
-                                )
-
-                                frameResults.add(frameResult)
-                                frameCounter++
-                            }
+                            viewModel.processFrame(imageProxy)
                         }
                     )
 
                     DetectionOverlay(
-                        detectionResult = detectionResult,
+                        detectionResult = viewModel.detectionResult,
                         modifier = Modifier.fillMaxSize()
                     )
 
                     ProcessingStatusOverlay(
-                        processingSegment = if (acquisitionState == AcquisitionState.RUNNING) {
-                            ProcessingSegment.LOCAL
-                        } else {
-                            ProcessingSegment.LOCAL
-                        },
+                        processingSegment = ProcessingSegment.LOCAL,
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(12.dp)
@@ -184,7 +112,7 @@ fun AcquisitionScreen(
 
         InfoPanel(
             configuration = configuration,
-            metrics = metrics,
+            metrics = viewModel.metrics,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(150.dp)
@@ -193,23 +121,26 @@ fun AcquisitionScreen(
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = "Processed frames: ${frameResults.size}",
+            text = "Processed frames: ${viewModel.frameCounter}",
             style = MaterialTheme.typography.labelMedium
         )
+
+        viewModel.currentAcquisition?.let { acquisition ->
+            Text(
+                text = "Acquisition saved: ${acquisition.acquisitionId}",
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         AcquisitionControls(
-            acquisitionState = acquisitionState,
+            acquisitionState = viewModel.acquisitionState,
             onStartClick = {
-                detectionResult = null
-                frameResults.clear()
-                frameCounter = 0
-                acquisitionState = AcquisitionState.RUNNING
+                viewModel.startAcquisition(configuration)
             },
             onStopClick = {
-                acquisitionState = AcquisitionState.STOPPED
-                detectionResult = null
+                viewModel.stopAcquisition()
             },
             modifier = Modifier.padding(bottom = 20.dp)
         )
