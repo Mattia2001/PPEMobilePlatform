@@ -6,10 +6,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import it.polito.ppemobile.models.AcquisitionConfig
+import it.polito.ppemobile.models.enums.CVModel
+import it.polito.ppemobile.models.enums.ExportFormat
+import it.polito.ppemobile.models.enums.OffloadingStrategy
+import it.polito.ppemobile.models.enums.PPEType
+import it.polito.ppemobile.models.enums.Runtime
 
 @Composable
 fun AcquisitionConfigurationScreen(
-    onStartAcquisitionClick: () -> Unit,
+    onStartAcquisitionClick: (AcquisitionConfig) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedModel by remember { mutableStateOf("YOLO11n") }
@@ -90,7 +96,36 @@ fun AcquisitionConfigurationScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = onStartAcquisitionClick,
+            onClick = {
+                val config = AcquisitionConfig(
+                    offloadingStrategy = when (selectedStrategy) {
+                        "Always Remote" -> OffloadingStrategy.ALWAYS_REMOTE
+                        "Adaptive" -> OffloadingStrategy.ADAPTIVE
+                        else -> OffloadingStrategy.ALWAYS_LOCAL
+                    },
+                    cvModel = when (selectedModel) {
+                        "YOLO11s" -> CVModel.YOLO11S
+                        "YOLO26n" -> CVModel.YOLO26N
+                        else -> CVModel.YOLO11N
+                    },
+                    runtime = when (selectedRuntime) {
+                        "TensorFlow Lite" -> Runtime.TFLITE
+                        else -> Runtime.ONNX_RUNTIME
+                    },
+                    fps = selectedFps.substringBefore(" ").toInt(),
+                    videoQuality = selectedQuality,
+                    compressionLevel = selectedCompression.substringAfter("JPEG ").toInt(),
+                    selectedPPEs = listOf(
+                        PPEType.HELMET,
+                        PPEType.SAFETY_VEST
+                    ),
+                    slidingWindowEnabled = false,
+                    majorityVotingEnabled = false,
+                    exportFormat = ExportFormat.JSONL
+                )
+
+                onStartAcquisitionClick(config)
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Start Acquisition")
