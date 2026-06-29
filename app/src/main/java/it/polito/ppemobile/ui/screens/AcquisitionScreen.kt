@@ -35,6 +35,8 @@ import it.polito.ppemobile.ui.components.DetectionOverlay
 import it.polito.ppemobile.ui.components.InfoPanel
 import it.polito.ppemobile.ui.components.ProcessingStatusOverlay
 import it.polito.ppemobile.ui.viewmodel.AcquisitionViewModel
+import it.polito.ppemobile.ui.components.AcquisitionSummaryCard
+import it.polito.ppemobile.ui.components.ShareExportButton
 
 @Composable
 fun AcquisitionScreen(
@@ -129,6 +131,26 @@ fun AcquisitionScreen(
             Text(
                 text = "Acquisition saved: ${acquisition.acquisitionId}",
                 style = MaterialTheme.typography.labelMedium
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            AcquisitionSummaryCard(
+                acquisition = acquisition,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+
+            }
+
+        viewModel.exportedZipFile?.let { zipFile ->
+            Text(
+                text = "Exported ZIP: ${zipFile.name}",
+                style = MaterialTheme.typography.labelMedium
+            )
+
+            ShareExportButton(
+                exportedFile = zipFile
             )
         }
 

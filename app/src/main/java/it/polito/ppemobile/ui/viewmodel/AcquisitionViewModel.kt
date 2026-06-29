@@ -14,12 +14,17 @@ import it.polito.ppemobile.models.enums.ProcessingSegment
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.system.measureTimeMillis
+import it.polito.ppemobile.storage.AcquisitionExporter
+import java.io.File
+import it.polito.ppemobile.storage.StorageManager
 
 class AcquisitionViewModel(application: Application) : AndroidViewModel(application) {
 
     private val metricsSampler = DeviceMetricsSampler(application.applicationContext)
     private val frameProcessor = FrameProcessor()
     private val acquisitionManager = AcquisitionManager()
+
+    private val storageManager = StorageManager(application.applicationContext)
 
     var acquisitionState by mutableStateOf(AcquisitionState.IDLE)
         private set
@@ -34,6 +39,9 @@ class AcquisitionViewModel(application: Application) : AndroidViewModel(applicat
         private set
 
     var frameCounter by mutableStateOf(0)
+        private set
+
+    var exportedZipFile by mutableStateOf<File?>(null)
         private set
 
     private val frameResults = mutableStateListOf<FrameResult>()
@@ -54,6 +62,7 @@ class AcquisitionViewModel(application: Application) : AndroidViewModel(applicat
         currentAcquisition = null
         frameResults.clear()
         frameCounter = 0
+        exportedZipFile = null
 
         acquisitionManager.start(configuration)
         acquisitionState = AcquisitionState.RUNNING
@@ -61,8 +70,18 @@ class AcquisitionViewModel(application: Application) : AndroidViewModel(applicat
 
     fun stopAcquisition() {
         acquisitionState = AcquisitionState.STOPPED
-        currentAcquisition = acquisitionManager.stop()
+
+        val acquisition = acquisitionManager.stop()
+        currentAcquisition = acquisition
         detectionResult = null
+
+        if (acquisition != null) {
+            exportedZipFile = storageManager.exportAcquisition(
+                acquisition = acquisition,
+                frames = acquisitionManager.getFrames()
+            )
+
+        }
     }
 
     fun processFrame(imageProxy: ImageProxy) {
