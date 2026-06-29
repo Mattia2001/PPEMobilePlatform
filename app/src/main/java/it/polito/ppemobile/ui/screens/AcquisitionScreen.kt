@@ -39,6 +39,9 @@ import kotlinx.coroutines.delay
 import it.polito.ppemobile.inference.FrameProcessor
 import it.polito.ppemobile.models.DetectionResult
 import it.polito.ppemobile.models.enums.AcquisitionState
+import it.polito.ppemobile.models.FrameResult
+import kotlin.system.measureTimeMillis
+import androidx.compose.runtime.mutableStateListOf
 
 @Composable
 fun AcquisitionScreen(
@@ -68,6 +71,14 @@ fun AcquisitionScreen(
 
     var detectionResult by remember {
         mutableStateOf<DetectionResult?>(null)
+    }
+
+    var frameCounter by remember {
+        mutableStateOf(0)
+    }
+
+    val frameResults = remember {
+        mutableStateListOf<FrameResult>()
     }
 
     var hasCameraPermission by remember {
@@ -114,7 +125,32 @@ fun AcquisitionScreen(
                         modifier = Modifier.fillMaxSize(),
                         onFrameAvailable = { imageProxy ->
                             if (acquisitionState == AcquisitionState.RUNNING) {
-                                detectionResult = frameProcessor.processFrame(imageProxy)
+                                val frameId = "frame_${frameCounter.toString().padStart(6, '0')}"
+                                val timestampGeneration = System.currentTimeMillis()
+
+                                var result: DetectionResult
+
+                                val inferenceTime = measureTimeMillis {
+                                    result = frameProcessor.processFrame(imageProxy)
+                                }
+
+                                detectionResult = result
+
+                                val frameResult = FrameResult(
+                                    frameId = frameId,
+                                    timestampGeneration = timestampGeneration,
+                                    inferenceTime = inferenceTime,
+                                    displayTime = System.currentTimeMillis(),
+                                    imageReference = null,
+                                    processingSegment = ProcessingSegment.LOCAL,
+                                    detectionResult = result,
+                                    complexity = null,
+                                    inOrder = true,
+                                    metricsSnapshot = metrics ?: metricsSampler.sample()
+                                )
+
+                                frameResults.add(frameResult)
+                                frameCounter++
                             }
                         }
                     )
@@ -154,12 +190,21 @@ fun AcquisitionScreen(
                 .height(150.dp)
         )
 
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = "Processed frames: ${frameResults.size}",
+            style = MaterialTheme.typography.labelMedium
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
 
         AcquisitionControls(
             acquisitionState = acquisitionState,
             onStartClick = {
                 detectionResult = null
+                frameResults.clear()
+                frameCounter = 0
                 acquisitionState = AcquisitionState.RUNNING
             },
             onStopClick = {
