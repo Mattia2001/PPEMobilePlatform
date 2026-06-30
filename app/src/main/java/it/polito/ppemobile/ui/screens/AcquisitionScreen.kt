@@ -127,27 +127,20 @@ fun AcquisitionScreen(
             style = MaterialTheme.typography.labelMedium
         )
 
-        viewModel.currentAcquisition?.let { acquisition ->
+        viewModel.currentAcquisition?.let {
             Text(
-                text = "Acquisition saved: ${acquisition.acquisitionId}",
+                text = "Acquisition saved",
                 style = MaterialTheme.typography.labelMedium
             )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            AcquisitionSummaryCard(
-                acquisition = acquisition,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-
-            }
+        }
 
         viewModel.exportedZipFile?.let { zipFile ->
             Text(
                 text = "Exported ZIP: ${zipFile.name}",
                 style = MaterialTheme.typography.labelMedium
             )
+
+            Spacer(modifier = Modifier.height(4.dp))
 
             ShareExportButton(
                 exportedFile = zipFile
