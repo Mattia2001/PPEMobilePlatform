@@ -72,7 +72,7 @@ class AcquisitionManager {
         }
 
         return AcquisitionSummary(
-            averageFps = null,
+            averageFps = computeAverageFps(frames),
             averageCpu = frames.mapNotNull { it.metricsSnapshot.cpuUsage }.averageOrNull(),
             averageRam = frames.mapNotNull { it.metricsSnapshot.ramUsage }.averageOrNull(),
             average5GSignal = frames.mapNotNull { it.metricsSnapshot.networkStatus.signalStrength }.averageOrNull(),
@@ -94,6 +94,13 @@ class AcquisitionManager {
         val batteryValues = frames.mapNotNull { it.metricsSnapshot.batteryLevel }
         if (batteryValues.size < 2) return null
         return batteryValues.first() - batteryValues.last()
+    }
+
+    private fun computeAverageFps(frames: List<FrameResult>): Float? {
+        if (frames.size < 2) return null
+        val elapsedMillis = frames.last().timestampGeneration - frames.first().timestampGeneration
+        if (elapsedMillis <= 0L) return null
+        return ((frames.size - 1) * 1000f) / elapsedMillis
     }
 
     private fun computeAveragePpeConfidence(frames: List<FrameResult>): Float? {

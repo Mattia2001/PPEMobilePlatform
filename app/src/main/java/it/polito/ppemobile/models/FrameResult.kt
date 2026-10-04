@@ -12,5 +12,6 @@ data class FrameResult(
     val detectionResult: DetectionResult,
     val complexity: Float?,
     val inOrder: Boolean,
-    val metricsSnapshot: MetricsSnapshot
+    val metricsSnapshot: MetricsSnapshot,
+    val remoteInference: RemoteInferenceMetrics? = null
 )

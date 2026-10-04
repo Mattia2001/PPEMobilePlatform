@@ -1,0 +1,129 @@
+{
+  "fingerprint": "motorola/cybert_g_syse/cybert:16/W1VVS36H.7-21-5-2/411f42-1b697:user/release-keys",
+  "sdk": 36,
+  "soc": "MT6897",
+  "applicationUid": 10387,
+  "nativePointerBytes": 8,
+  "libraryLoads": [
+    {
+      "library": "libneuron_runtime.so",
+      "loaded": true
+    },
+    {
+      "library": "libneuron_runtime.7.so",
+      "loaded": true
+    },
+    {
+      "library": "libneuron_graph_delegate.mtk.so",
+      "loaded": true
+    },
+    {
+      "library": "libneuronusdk_adapter.mtk.so",
+      "loaded": true
+    },
+    {
+      "library": "libtflite_mtk.mtk.so",
+      "loaded": true
+    }
+  ],
+  "liteRt": {
+    "availableAccelerators": [
+      "GPU",
+      "CPU"
+    ],
+    "builtinProviderDeviceSupported": true,
+    "builtinProviderLibraryReady": true,
+    "providerEnvironmentAccelerators": [
+      "NPU",
+      "GPU",
+      "CPU"
+    ],
+    "yolo26n640": {
+      "requested": "NPU",
+      "placementVerified": false,
+      "compiled": true,
+      "singleSyntheticRunMs": 200.985538,
+      "outputElements": 75600,
+      "outputFinite": true
+    }
+  },
+  "nnapiDevices": [
+    {
+      "name": "mtk-dsp_shim",
+      "version": "7.2.4",
+      "type": 4,
+      "featureLevel": 1000008,
+      "addFloat32": {
+        "explicitDeviceOnly": true,
+        "supported": true,
+        "compileMs": 19.559769,
+        "computeMs": 1.959616,
+        "outputCorrect": true
+      },
+      "addQuant8": {
+        "explicitDeviceOnly": true,
+        "supported": true,
+        "compileMs": 17.087077,
+        "computeMs": 1.792923,
+        "outputCorrect": true
+      }
+    },
+    {
+      "name": "mtk-mdla_shim",
+      "version": "7.2.4",
+      "type": 4,
+      "featureLevel": 1000008,
+      "addFloat32": {
+        "explicitDeviceOnly": true,
+        "supported": false
+      },
+      "addQuant8": {
+        "explicitDeviceOnly": true,
+        "supported": true,
+        "compileMs": 12.382462,
+        "computeMs": 1.279077,
+        "outputCorrect": true
+      }
+    },
+    {
+      "name": "mtk-neuron_shim",
+      "version": "7.2.4",
+      "type": 4,
+      "featureLevel": 1000008,
+      "addFloat32": {
+        "explicitDeviceOnly": true,
+        "supported": true,
+        "compileMs": 38.856385,
+        "computeMs": 2.803,
+        "outputCorrect": true
+      },
+      "addQuant8": {
+        "explicitDeviceOnly": true,
+        "supported": true,
+        "compileMs": 16.228616,
+        "computeMs": 1.34,
+        "outputCorrect": true
+      }
+    },
+    {
+      "name": "nnapi-reference",
+      "version": "411f42-1b697",
+      "type": 2,
+      "featureLevel": 1000008,
+      "addFloat32": {
+        "explicitDeviceOnly": true,
+        "supported": true,
+        "compileMs": 0.145462,
+        "computeMs": 0.656615,
+        "outputCorrect": true
+      },
+      "addQuant8": {
+        "explicitDeviceOnly": true,
+        "supported": true,
+        "compileMs": 0.126692,
+        "computeMs": 0.038461,
+        "outputCorrect": true
+      }
+    }
+  ]
+}

@@ -29,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import it.polito.ppemobile.models.AcquisitionConfig
 import it.polito.ppemobile.models.enums.AcquisitionState
 import it.polito.ppemobile.models.enums.ProcessingSegment
+import it.polito.ppemobile.models.enums.OffloadingStrategy
 import it.polito.ppemobile.ui.components.AcquisitionControls
 import it.polito.ppemobile.ui.components.CameraPreview
 import it.polito.ppemobile.ui.components.DetectionOverlay
@@ -84,6 +85,8 @@ fun AcquisitionScreen(
                 ) {
                     CameraPreview(
                         modifier = Modifier.fillMaxSize(),
+                        analysisResolution = configuration?.videoQuality ?: "1080p",
+                        maximumAnalysisFps = configuration?.fps ?: 30,
                         onFrameAvailable = { imageProxy ->
                             viewModel.processFrame(imageProxy)
                         }
@@ -95,7 +98,9 @@ fun AcquisitionScreen(
                     )
 
                     ProcessingStatusOverlay(
-                        processingSegment = ProcessingSegment.LOCAL,
+                        processingSegment = if (
+                            configuration?.offloadingStrategy == OffloadingStrategy.ALWAYS_OFFLOAD
+                        ) ProcessingSegment.REMOTE else ProcessingSegment.LOCAL,
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(12.dp)
@@ -115,6 +120,8 @@ fun AcquisitionScreen(
         InfoPanel(
             configuration = configuration,
             metrics = viewModel.metrics,
+            processingFps = viewModel.processingFps,
+            inferenceTimeMillis = viewModel.lastInferenceTimeMillis,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(150.dp)
@@ -126,6 +133,23 @@ fun AcquisitionScreen(
             text = "Processed frames: ${viewModel.frameCounter}",
             style = MaterialTheme.typography.labelMedium
         )
+
+        viewModel.inferenceError?.let { error ->
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+
+        viewModel.detectionResult?.localExecution?.let { execution ->
+            Text(
+                text = "Local: ${execution.configuredBackend} configured" +
+                    (if (!execution.acceleratorPlacementVerified) " · placement unverified" else "") +
+                    (if (execution.fallbackReason != null) " · fallback (details in JSONL)" else ""),
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
 
         viewModel.currentAcquisition?.let {
             Text(

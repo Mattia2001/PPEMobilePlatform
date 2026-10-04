@@ -5,10 +5,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import it.polito.ppemobile.models.AcquisitionConfig
+import it.polito.ppemobile.storage.AcquisitionConfigStore
 import it.polito.ppemobile.ui.screens.AcquisitionConfigurationScreen
 import it.polito.ppemobile.ui.screens.AcquisitionScreen
 import it.polito.ppemobile.ui.screens.HomeScreen
@@ -16,16 +19,20 @@ import it.polito.ppemobile.ui.screens.ResultsScreen
 import it.polito.ppemobile.ui.screens.SettingsScreen
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    var currentConfig by remember { mutableStateOf<AcquisitionConfig?>(null) }
+    val context = LocalContext.current
+    val configStore = remember { AcquisitionConfigStore(context.applicationContext) }
+    var currentConfig by remember { mutableStateOf(configStore.load()) }
 
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = "home",
+        modifier = modifier
     ) {
         composable("home") {
             HomeScreen(
+                currentConfiguration = currentConfig,
                 onNewAcquisitionClick = {
                     navController.navigate("acquisition_config")
                 },
@@ -40,8 +47,10 @@ fun AppNavigation() {
 
         composable("acquisition_config") {
             AcquisitionConfigurationScreen(
+                initialConfiguration = currentConfig,
                 onStartAcquisitionClick = { config ->
                     currentConfig = config
+                    configStore.save(config)
                     navController.navigate("acquisition")
                 }
             )
@@ -58,7 +67,7 @@ fun AppNavigation() {
         }
 
         composable("settings") {
-            SettingsScreen()
+            SettingsScreen(onBackClick = { navController.popBackStack() })
         }
     }
 }

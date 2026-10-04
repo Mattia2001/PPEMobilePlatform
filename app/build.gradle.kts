@@ -3,6 +3,10 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+// Keep the production default stable while allowing an explicitly version-matched
+// LiteRT/MediaTek diagnostic build (for example -PppeLiteRtVersion=2.1.0rc1).
+val ppeLiteRtVersion = providers.gradleProperty("ppeLiteRtVersion").orElse("2.1.5")
+
 android {
     namespace = "it.polito.ppemobile"
     compileSdk {
@@ -35,6 +39,14 @@ android {
     buildFeatures {
         compose = true
     }
+    androidResources {
+        noCompress += "tflite"
+    }
+    packaging {
+        // LiteRT discovers compiler/dispatch plugins by scanning nativeLibraryDir.
+        // They must therefore be extracted from the APK instead of mmap'ed in place.
+        jniLibs.useLegacyPackaging = true
+    }
 }
 
 dependencies {
@@ -53,11 +65,20 @@ dependencies {
     implementation("androidx.camera:camera-view:1.4.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    implementation("com.google.ai.edge.litert:litert:${ppeLiteRtVersion.get()}")
+    if (ppeLiteRtVersion.get().contains("rc")) {
+        // The 2.1.0 RC CompiledModel artifact did not yet bundle the legacy
+        // Interpreter API used by the application's explicit CPU fallback.
+        implementation("org.tensorflow:tensorflow-lite-api:2.17.0")
+        implementation("org.tensorflow:tensorflow-lite:2.17.0")
+    }
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    // Diagnostic-only native API access; never packaged in the user application.
+    androidTestImplementation("net.java.dev.jna:jna:5.14.0@aar")
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

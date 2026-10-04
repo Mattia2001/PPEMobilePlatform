@@ -12,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import it.polito.ppemobile.models.AcquisitionConfig
+import it.polito.ppemobile.ui.formatters.displayName
 
 @Composable
-fun ConfigurationCard() {
+fun ConfigurationCard(configuration: AcquisitionConfig) {
     Card(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -25,9 +27,12 @@ fun ConfigurationCard() {
                 fontWeight = FontWeight.Bold
             )
 
-            ConfigurationRow("Model", "YOLO11n")
-            ConfigurationRow("Strategy", "Always Local")
-            ConfigurationRow("Runtime", "ONNX Runtime")
+            ConfigurationRow("Model", configuration.cvModel.displayName())
+            ConfigurationRow("Strategy", configuration.offloadingStrategy.displayName())
+            ConfigurationRow("Runtime", configuration.runtime.displayName())
+            if (configuration.runtime == it.polito.ppemobile.models.enums.Runtime.TFLITE) {
+                ConfigurationRow("Accelerator", configuration.localAcceleration.name)
+            }
         }
     }
 }

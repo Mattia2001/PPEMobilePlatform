@@ -16,5 +16,27 @@ data class AcquisitionConfig(
     val selectedPPEs: List<PPEType>,
     val slidingWindowEnabled: Boolean,
     val majorityVotingEnabled: Boolean,
-    val exportFormat: ExportFormat
-)
+    val exportFormat: ExportFormat,
+    val localAcceleration: it.polito.ppemobile.models.enums.LocalAcceleration = it.polito.ppemobile.models.enums.LocalAcceleration.CPU
+) {
+    companion object {
+        fun default() = AcquisitionConfig(
+            offloadingStrategy = OffloadingStrategy.ALWAYS_LOCAL,
+            cvModel = CVModel.YOLO26N_V2,
+            runtime = Runtime.TFLITE,
+            fps = 30,
+            videoQuality = "1080p",
+            compressionLevel = 80,
+            selectedPPEs = listOf(
+                PPEType.HELMET,
+                PPEType.SAFETY_VEST,
+                PPEType.GLOVES,
+                PPEType.SHOES,
+                PPEType.BOOTS
+            ),
+            slidingWindowEnabled = false,
+            majorityVotingEnabled = false,
+            exportFormat = ExportFormat.JSONL
+        )
+    }
+}

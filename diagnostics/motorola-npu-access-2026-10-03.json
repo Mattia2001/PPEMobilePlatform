@@ -1,0 +1,66 @@
+{
+  "device": {
+    "manufacturer": "Motorola",
+    "model": "Edge 60 Pro",
+    "soc": "Mediatek MT6897",
+    "androidApi": 36,
+    "fingerprint": "motorola/cybert_g_syse/cybert:16/W1VVS36H.7-21-5-2/411f42-1b697:user/release-keys"
+  },
+  "liteRt": {
+    "version": "2.1.5",
+    "sourceCommit": "9d26e89",
+    "availableAcceleratorsDefaultEnvironment": ["GPU", "CPU"],
+    "builtinProviderDeviceSupported": true,
+    "builtinProviderLibraryReady": true,
+    "providerEnvironmentAccelerators": ["NPU", "GPU", "CPU"],
+    "libraryLoads": {
+      "libLiteRtCompilerPlugin_MediaTek.so": true,
+      "libLiteRtDispatch_MediaTek.so": true,
+      "libneuron_runtime.so": true,
+      "libneuron_runtime.7.so": true,
+      "libneuron_graph_delegate.mtk.so": true,
+      "libneuronusdk_adapter.mtk.so": true,
+      "libtflite_mtk.mtk.so": true
+    },
+    "minimalAdd10x10": {
+      "compiled": true,
+      "singleRunMs": 6.732924,
+      "outputFinite": true,
+      "placementVerifiedByJavaApi": false
+    },
+    "yolo26n640Fp32": {
+      "compiled": true,
+      "singleSyntheticRunMs": 7.557,
+      "outputElements": 75600,
+      "outputFinite": true,
+      "placementVerifiedByJavaApi": false
+    }
+  },
+  "applicationBackend": {
+    "requested": "NPU",
+    "configuredBackend": "NPU",
+    "runtimeApi": "CompiledModel 2.1.5",
+    "fallbackReason": null,
+    "initializationAndWarmUpMs": 12718.025155,
+    "runtimeAccelerators": ["GPU", "CPU", "NPU"]
+  },
+  "placementEvidence": {
+    "compilerPluginApplied": "MediaTek compiler plugin (ver 0.1.0)",
+    "delegate": "DispatchDelegate",
+    "delegatedNodes": "1 out of 1 LiteRT subgraph node",
+    "legalizedOperations": "414 out of 414",
+    "mediaTekRuntimeCompatibility": "NeuroPilot 8.2.26",
+    "cpuFallbackObserved": false
+  },
+  "precision": {
+    "model": "FP32",
+    "int8RequiredForThisPath": false,
+    "note": "Direct NNAPI probing found mtk-mdla quant8-only for the minimal graph, but the MediaTek LiteRT/Neuron compiler-dispatch path successfully compiled and ran the existing FP32 YOLO model."
+  },
+  "scope": {
+    "syntheticInferenceOnly": true,
+    "cameraEndToEndMeasured": false,
+    "releaseApkIncludesPlugins": false,
+    "debugApkIncludesPlugins": true
+  }
+}

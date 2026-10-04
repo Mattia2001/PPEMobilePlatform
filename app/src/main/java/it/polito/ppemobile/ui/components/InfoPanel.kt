@@ -16,12 +16,18 @@ import it.polito.ppemobile.models.MetricsSnapshot
 fun InfoPanel(
     configuration: AcquisitionConfig?,
     metrics: MetricsSnapshot?,
+    processingFps: Float? = null,
+    inferenceTimeMillis: Long? = null,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
-        AcquisitionMetricsPanel(metrics = metrics)
+        AcquisitionMetricsPanel(
+            metrics = metrics,
+            processingFps = processingFps,
+            inferenceTimeMillis = inferenceTimeMillis
+        )
 
         if (configuration != null) {
             Spacer(modifier = Modifier.height(8.dp))

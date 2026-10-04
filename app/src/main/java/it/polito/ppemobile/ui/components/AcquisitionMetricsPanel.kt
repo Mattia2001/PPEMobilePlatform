@@ -17,6 +17,8 @@ import it.polito.ppemobile.models.MetricsSnapshot
 @Composable
 fun AcquisitionMetricsPanel(
     metrics: MetricsSnapshot?,
+    processingFps: Float? = null,
+    inferenceTimeMillis: Long? = null,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -36,8 +38,8 @@ fun AcquisitionMetricsPanel(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
-                    Text("FPS: --")
-                    Text("Latency: -- ms")
+                    Text("FPS: ${processingFps?.format(1) ?: "--"}")
+                    Text("Latency: ${inferenceTimeMillis?.let { "$it ms" } ?: "--"}")
                     Text("CPU: ${metrics?.cpuUsage?.format(1) ?: "--"} %")
                 }
 

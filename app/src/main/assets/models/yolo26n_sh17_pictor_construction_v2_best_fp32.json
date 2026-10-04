@@ -1,0 +1,235 @@
+{
+  "schema_version": 2,
+  "created_at_utc": "2026-08-07T15:54:45.685055+00:00",
+  "catalog": {
+    "model_id": "yolo26n_sh17_pictor_construction_v2",
+    "display_name": "YOLO26n \u2014 PPE Dataset v2",
+    "available": true,
+    "runtime": "TENSORFLOW_LITE",
+    "dataset": "SH17 + Pictor-PPE + Construction-PPE (ontology v2)",
+    "is_baseline": false
+  },
+  "artifact": {
+    "filename": "yolo26n_sh17_pictor_construction_v2_best_fp32.tflite",
+    "format": "LiteRT/TFLite",
+    "precision": "FP32",
+    "size_bytes": 9837613,
+    "sha256": "a6dbc77ae77382c9cf2d96c4269a063fd5e4537f5f97f2d2d9db85867fa2a571"
+  },
+  "source": {
+    "run_name": "sh17_pictor_construction_v2_yolo26n_v1_fastio",
+    "checkpoint": "/content/drive/MyDrive/PPEBenchmark/experiments/sh17_pictor_construction_v2_yolo26n_v1_fastio/weights/best.pt",
+    "checkpoint_sha256": "bb72e4f702a68b4802507df7614d59fd7542a53aa74cb1e38ba2d2b2547171c6",
+    "protocol_sha256": "20d311bd727fade26a80be44732b64444ba88d8063f7b025de956bee852e4230",
+    "training_initialization": "COCO-pretrained yolo26n.pt",
+    "fine_tuned_from_previous_ppe_model": false,
+    "training_epochs": 100,
+    "best_validation_epoch": 87,
+    "best_validation_mAP50_95": 0.43438,
+    "dataset_archive_sha256": "10988e8c19b9650d2b8c8b81dcceb941911adae6f3d2cf982c37f2f8cd6656aa"
+  },
+  "model": {
+    "architecture": "YOLO26n",
+    "task": "detect",
+    "classes": {
+      "0": "person",
+      "1": "helmet",
+      "2": "safety_vest",
+      "3": "gloves",
+      "4": "safety_boots"
+    },
+    "input_size": [
+      640,
+      640
+    ],
+    "input_layout": "NCHW",
+    "input_color_space": "RGB",
+    "input_normalization": "uint8 RGB converted to float32 and divided by 255",
+    "prediction_head": "one_to_many",
+    "end2end": false,
+    "nms_embedded": false,
+    "letterbox_required": true,
+    "annotation_semantics": "one box per object; PPE labels apply only while worn"
+  },
+  "tensors": {
+    "inputs": [
+      {
+        "name": "serving_default_args_0",
+        "shape": [
+          1,
+          3,
+          640,
+          640
+        ],
+        "dtype": "float32",
+        "quantization": [
+          0.0,
+          0
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "serving_default_output_0_output",
+        "shape": [
+          1,
+          9,
+          8400
+        ],
+        "dtype": "float32",
+        "quantization": [
+          0.0,
+          0
+        ]
+      }
+    ]
+  },
+  "evaluation": {
+    "aggregate": {
+      "evaluated_at_utc": "2026-08-07T15:11:11.355289+00:00",
+      "checkpoint": "/content/drive/MyDrive/PPEBenchmark/experiments/sh17_pictor_construction_v2_yolo26n_v1_fastio/weights/best.pt",
+      "dataset_yaml": "/content/datasets/processed/sh17_pictor_construction_v2_640/dataset.yaml",
+      "images": 1107,
+      "annotations": 3446,
+      "overall_metrics": {
+        "metrics/precision(B)": 0.8502326854590615,
+        "metrics/recall(B)": 0.6975575723483725,
+        "metrics/mAP50(B)": 0.7619825510616618,
+        "metrics/mAP50-95(B)": 0.46585064416073846,
+        "fitness": 0.46585064416073846
+      },
+      "per_class": {
+        "person": {
+          "ground_truth_instances": 2011,
+          "mAP50_95": 0.6546132597213832,
+          "evaluable": true
+        },
+        "helmet": {
+          "ground_truth_instances": 567,
+          "mAP50_95": 0.43080786373902147,
+          "evaluable": true
+        },
+        "safety_vest": {
+          "ground_truth_instances": 230,
+          "mAP50_95": 0.5256643904993445,
+          "evaluable": true
+        },
+        "gloves": {
+          "ground_truth_instances": 427,
+          "mAP50_95": 0.33132181084497503,
+          "evaluable": true
+        },
+        "safety_boots": {
+          "ground_truth_instances": 211,
+          "mAP50_95": 0.3868458959989681,
+          "evaluable": true
+        }
+      }
+    },
+    "legacy": {
+      "evaluated_at_utc": "2026-08-07T15:11:21.971457+00:00",
+      "checkpoint": "/content/drive/MyDrive/PPEBenchmark/experiments/sh17_pictor_construction_v2_yolo26n_v1_fastio/weights/best.pt",
+      "dataset_yaml": "/content/datasets/processed/sh17_pictor_construction_v2_640/evaluation_contracts/dataset_eval_legacy.yaml",
+      "images": 966,
+      "annotations": 2466,
+      "overall_metrics": {
+        "metrics/precision(B)": 0.8212381057523538,
+        "metrics/recall(B)": 0.5989414010237383,
+        "metrics/mAP50(B)": 0.6548082515901675,
+        "metrics/mAP50-95(B)": 0.42497321545262345,
+        "fitness": 0.42497321545262345
+      },
+      "per_class": {
+        "person": {
+          "ground_truth_instances": 1775,
+          "mAP50_95": 0.6797719838309749,
+          "evaluable": true
+        },
+        "helmet": {
+          "ground_truth_instances": 375,
+          "mAP50_95": 0.38852512314978865,
+          "evaluable": true
+        },
+        "safety_vest": {
+          "ground_truth_instances": 52,
+          "mAP50_95": 0.3380871539427844,
+          "evaluable": true
+        },
+        "gloves": {
+          "ground_truth_instances": 264,
+          "mAP50_95": 0.29350860088694564,
+          "evaluable": true
+        },
+        "safety_boots": {
+          "ground_truth_instances": 0,
+          "mAP50_95": null,
+          "evaluable": false
+        }
+      }
+    },
+    "construction_ppe": {
+      "evaluated_at_utc": "2026-08-07T15:11:28.033368+00:00",
+      "checkpoint": "/content/drive/MyDrive/PPEBenchmark/experiments/sh17_pictor_construction_v2_yolo26n_v1_fastio/weights/best.pt",
+      "dataset_yaml": "/content/datasets/processed/sh17_pictor_construction_v2_640/evaluation_contracts/dataset_eval_construction_ppe.yaml",
+      "images": 141,
+      "annotations": 980,
+      "overall_metrics": {
+        "metrics/precision(B)": 0.8756037161746718,
+        "metrics/recall(B)": 0.7795804700497266,
+        "metrics/mAP50(B)": 0.8281890357954242,
+        "metrics/mAP50-95(B)": 0.46196388755491397,
+        "fitness": 0.46196388755491397
+      },
+      "per_class": {
+        "person": {
+          "ground_truth_instances": 236,
+          "mAP50_95": 0.45100679168595104,
+          "evaluable": true
+        },
+        "helmet": {
+          "ground_truth_instances": 192,
+          "mAP50_95": 0.49980912277524714,
+          "evaluable": true
+        },
+        "safety_vest": {
+          "ground_truth_instances": 178,
+          "mAP50_95": 0.5810335289286531,
+          "evaluable": true
+        },
+        "gloves": {
+          "ground_truth_instances": 163,
+          "mAP50_95": 0.3895889234703825,
+          "evaluable": true
+        },
+        "safety_boots": {
+          "ground_truth_instances": 211,
+          "mAP50_95": 0.38838107091433605,
+          "evaluable": true
+        }
+      }
+    }
+  },
+  "headline_evaluation": {
+    "test_set": "aggregate v2 held-out test",
+    "images": 1107,
+    "annotations": 3446,
+    "metrics/precision(B)": 0.8502326854590615,
+    "metrics/recall(B)": 0.6975575723483725,
+    "metrics/mAP50(B)": 0.7619825510616618,
+    "metrics/mAP50-95(B)": 0.46585064416073846,
+    "fitness": 0.46585064416073846
+  },
+  "known_dataset_limitations": [
+    "safety_boots annotations currently originate only from Construction-PPE.",
+    "Generic SH17 shoes annotations were removed and were not remapped to safety_boots.",
+    "Source-aware results reveal a domain gap between the legacy and Construction-PPE subsets.",
+    "Operational confidence thresholds still require calibration through mobile field tests."
+  ],
+  "export_environment": {
+    "python": "3.12.13",
+    "ultralytics": "8.4.112",
+    "torch": "2.11.0+cpu",
+    "tensorflow": "2.20.0",
+    "device": "cpu"
+  }
+}

@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import it.polito.ppemobile.models.AcquisitionConfig
+import it.polito.ppemobile.ui.formatters.displayName
 
 @Composable
 fun AcquisitionConfigurationCard(
@@ -40,9 +41,9 @@ fun AcquisitionConfigurationCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
-                    Text("Model: ${configuration.cvModel}")
-                    Text("Runtime: ${configuration.runtime}")
-                    Text("Strategy: ${configuration.offloadingStrategy}")
+                    Text("Model: ${configuration.cvModel.displayName()}")
+                    Text("Runtime: ${configuration.runtime.displayName()}")
+                    Text("Strategy: ${configuration.offloadingStrategy.displayName()}")
                 }
 
                 Column {

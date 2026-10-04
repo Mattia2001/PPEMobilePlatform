@@ -53,6 +53,7 @@ class AcquisitionExporter(
                 put("offloadingStrategy", acquisition.configuration.offloadingStrategy.name)
                 put("cvModel", acquisition.configuration.cvModel.name)
                 put("runtime", acquisition.configuration.runtime.name)
+                put("localAcceleration", acquisition.configuration.localAcceleration.name)
                 put("fps", acquisition.configuration.fps)
                 put("videoQuality", acquisition.configuration.videoQuality)
                 put("compressionLevel", acquisition.configuration.compressionLevel)
@@ -103,6 +104,29 @@ class AcquisitionExporter(
             put("complexity", frame.complexity)
             put("inOrder", frame.inOrder)
 
+            frame.remoteInference?.let { remote ->
+                put("remoteInference", JSONObject().apply {
+                    put("apiVersion", remote.apiVersion)
+                    put("modelId", remote.modelId)
+                    put("modelVersion", remote.modelVersion)
+                    put("device", remote.device)
+                    put("inputSize", remote.inputSize)
+                    put("encodedBytes", remote.encodedBytes)
+                    put("responseBytes", remote.responseBytes)
+                    put("encodeMs", remote.encodeMs)
+                    put("roundTripMs", remote.roundTripMs)
+                    put("transportAndApiOverheadMs", remote.transportAndApiOverheadMs)
+                    put("queueMs", remote.queueMs)
+                    put("decodeMs", remote.decodeMs)
+                    put("preprocessMs", remote.preprocessMs)
+                    put("inferenceMs", remote.inferenceMs)
+                    put("postprocessMs", remote.postprocessMs)
+                    put("totalServerMs", remote.totalServerMs)
+                    put("serverReceiveTimestampMs", remote.serverReceiveTimestampMs)
+                    put("serverCompleteTimestampMs", remote.serverCompleteTimestampMs)
+                })
+            }
+
             put("metricsSnapshot", JSONObject().apply {
                 put("cpuUsage", frame.metricsSnapshot.cpuUsage)
                 put("ramUsage", frame.metricsSnapshot.ramUsage)
@@ -122,6 +146,28 @@ class AcquisitionExporter(
             })
 
             put("detectionResult", JSONObject().apply {
+                frame.detectionResult.localExecution?.let { execution ->
+                    put("localExecution", JSONObject().apply {
+                        put("requested", execution.requested)
+                        put("configuredBackend", execution.configuredBackend)
+                        put("runtimeApi", execution.runtimeApi)
+                        put("fallbackReason", execution.fallbackReason ?: JSONObject.NULL)
+                        put("initializationAndWarmUpMs", execution.warmUpMs)
+                        put("soc", execution.soc)
+                        put("gpuRenderer", execution.gpuRenderer)
+                        put("runtimeAccelerators", JSONArray(execution.runtimeAccelerators))
+                        put("acceleratorPlacementVerified", execution.acceleratorPlacementVerified)
+                    })
+                }
+                put("frameWidth", frame.detectionResult.frameWidth)
+                put("frameHeight", frame.detectionResult.frameHeight)
+                frame.detectionResult.inferenceDiagnostics?.let { diagnostics ->
+                    put("inferenceDiagnostics", JSONObject().apply {
+                        put("maxConfidenceByClass", JSONObject(diagnostics.maxConfidenceByClass))
+                        put("candidatesAboveThreshold", diagnostics.candidatesAboveThreshold)
+                        put("detectionsAfterNms", diagnostics.detectionsAfterNms)
+                    })
+                }
                 put("persons", JSONArray(frame.detectionResult.persons.map { person ->
                     JSONObject().apply {
                         put("personId", person.personId)

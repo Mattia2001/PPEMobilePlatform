@@ -18,11 +18,10 @@ fun ProcessingStatusOverlay(
     processingSegment: ProcessingSegment,
     modifier: Modifier = Modifier
 ) {
-    val label = when (processingSegment) {
+    val segmentLabel = when (processingSegment) {
         ProcessingSegment.LOCAL -> "LOCAL"
         ProcessingSegment.REMOTE -> "REMOTE"
     }
-
     Box(
         modifier = modifier
             .wrapContentSize()
@@ -34,7 +33,7 @@ fun ProcessingStatusOverlay(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = label,
+            text = segmentLabel,
             color = Color.White,
             style = MaterialTheme.typography.labelLarge
         )

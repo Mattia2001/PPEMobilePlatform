@@ -12,6 +12,8 @@ enum class PPEType {
 
     MASK,
 
-    BOOTS
+    BOOTS,
+
+    SHOES
 
 }
